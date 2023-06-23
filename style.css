@@ -1,0 +1,21 @@
+body{
+	background-color: #4682B4;
+}
+form {
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+	border: 2px solid black;
+	border-radius: 5px;
+	padding: 10px;
+}
+.receive-message{
+	color: #00FF00;
+}
+.error-message{
+	color: #FF0000;
+}
+#submit {
+	width: 10%;	
+	margin: 10px 0px;
+}

@@ -16,10 +16,10 @@ try {
 		if (isset($_POST[$verifyValue]) && !empty($_POST[$verifyValue])) {
 			$inputValueTrim = trim($_POST[$verifyValue]);
 			$verifyValue = htmlspecialchars($inputValueTrim);
-			echo '<p class=receive-message >Name '. $verifyValue .' is valid!</p>';
+// 			echo '<p class=receive-message >Name '. $verifyValue .' is valid!</p>';
 			return true;
 		} else {
-			echo '<p class=error-message >Enter your '.$verifyValue.' !</p>';
+// 			echo '<p class=error-message >Enter your name !</p>';
 			return false;
 		}
 	}
@@ -35,10 +35,10 @@ try {
 	  
 		// Validate the input
 		if (!filter_var($inputEmail, FILTER_VALIDATE_EMAIL)) {
-			echo '<p class=error-message >Error: Invalid email address!</p>';
+// 			echo '<p class=error-message >Error: Invalid email address!</p>';
 			return false;
 		} else {
-			echo '<p class=receive-message >Email '. $inputEmail .' is valid!</p>';
+// 			echo '<p class=receive-message >Email '. $inputEmail .' is valid!</p>';
 			return true;
 		}
 	  }
@@ -51,20 +51,20 @@ try {
 				$extension = $fileInfo['extension'];
 				$allowedExtensions = array('jpg', 'png', 'gif');
 				if (in_array($extension, $allowedExtensions)) {
-					move_uploaded_file($_FILES['file']['tmp_name'], 'upload/' . basename($_FILES['file']['name']));
-					echo '<p class=receive-message >Envoi effectué !</p>';
+				// 	move_uploaded_file($_FILES['file']['tmp_name'], 'upload/' . basename($_FILES['file']['name']));
+				// 	echo '<p class=receive-message >Envoi effectué !</p>';
 					$inputFile = $_FILES['file']['name'];
 					return true;
 				} else {
-					echo '<p class=error-message >Error: Not an accepted file type!</p>';
+				// 	echo '<p class=error-message >Error: Not an accepted file type!</p>';
 					return false;
 				}
 			} else {
-				echo '<p class=error-message >Error: File size is too large!</p>';
+				// echo '<p class=error-message >Error: File size is too large!</p>';
 				return false;
 			}
 		} else {
-			echo '<p class=error-message >Error: File not upload failed!</p>';
+// 			echo '<p class=error-message >Error: File not upload failed!</p>';
 			return false;
 		}
 	}
@@ -80,10 +80,10 @@ try {
 		$inputDescription = htmlspecialchars($inputDescription, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		// Validate the input
 		if (strlen($inputDescription) < 2) {
-			echo '<p class=error-message >Textarea input must be at least 2 characters long.!</p>';
+// 			echo '<p class=error-message >Textarea input must be at least 2 characters long.!</p>';
 			return false;
 		}
-		echo '<p class=receive-message >Description '. $inputDescription .'is valid!</p>';
+// 		echo '<p class=receive-message >Description '. $inputDescription .'is valid!</p>';
 		return true;
 	}
 
@@ -107,6 +107,7 @@ try {
 
 		// Execute SQL statement and handle errors
 		if ($stmt->execute()) {
+		    
 			$to=$inputEmail;
 			$subject="Hackers Poulette - Form sent successfully";
 			$message="
@@ -121,13 +122,14 @@ try {
 			// $entetes.="Cc: ";
 			// $header.="Content-Type: text/html; charset=iso-8859-1";
 			if(mail($to, $subject, $message, $header)) {
-				echo '<p class=receive-message >Mail envoyé avec succès.</p>';
+				// echo '<p class=receive-message >Mail envoyé avec succès.</p>';
 			} else {
-			echo "<p class=error-message >Un problème est survenu lors de l'envoi du mail.</p>";
+// 			echo "<p class=error-message >Un problème est survenu lors de l'envoi du mail.</p>";
 			}
-				// exit();
+                header('Location: success.php');
+				exit();
 		} else {
-			echo "Error: " . $stmt->errorInfo()[2];
+// 			echo "Error: " . $stmt->errorInfo()[2];
 		}
 	}
 } catch(Exception $e) {
@@ -143,13 +145,81 @@ try {
 <head>
 	<meta charset="utf-8">
 	<title>Hacking poulette</title>
-	<link rel="stylesheet" href="css/basics.css" media="screen" title="no title" charset="utf-8">
-	<!-- <link rel="" href="./traitement.php"> -->
-
-		<!-- <script> function onClick(e) {
+	<link rel="stylesheet" href="./style.css" media="screen" title="no title" charset="utf-8">
+	<script>
+	    function successCallback () {
+	        debugger;
+	    }
+	    function onLoadCallBack() {
+	        grecaptcha.render('divRecaptcha', {
+	            sitekey:'6LdAN70mAAAAAHJx0J616dL3hGnoL9LzuCfHkNGj',
+	            callback: successCallback,
+	        })
+	    }
+	</script>
+	<script src="https://www.google.com/recaptcha/api.js?onload=onLoadCallBack&render=explicit"async defer></script>
+	<style>
+	</style>
+</head>
+<body>
+	<h2>Hackers Poulette ™ </h2>
+	<h1>Contact Support</h1>
+	<form action="" method="post" enctype="multipart/form-data">
+		<div id="divName" class="text_input">
+			<label for="name">Name</label>
+			<input type="text" name="name" value="" maxlength="255">
+			<?php 
+			inputValue($inputName); 
+			?>
+		</div>
+		<span id="error_divName"></span>
+		<div id="divFirstname" class="text_input">
+			<label for="firstname">Firstname</label>
+			<input type="text" name="firstname" value="" maxlength="255">
+			<?php 
+			inputValue($inputFirstname); 
+			?>
+		</div>
+		<span id="error_divFirstname"></span>
+		<div id="divEmail" class="text_input">
+			<label for="email">Email</label>
+			<input type="email" name="email" value="" maxlength="255">
+			<?php 
+			sanitizeEmail($inputEmail); 
+			?>
+		</div>
+		<span id="error_divEmail"></span>
+		<div id="divFile" class="text_input">
+			<label for="file">File</label>
+            <input type="file" name="file" id="">
+			<?php 
+			inputFile ($inputFile) ;
+			?>
+		</div>
+		<span id="error_divFile"></span>
+		<div id="divDescription" class="text_input">
+			<label for="description">Description</label>
+			<textarea type="text" name="description" value="" maxlength="1000"></textarea>
+			<?php 
+				sanitizeTextarea($inputDescription); 
+			?>
+		</div>
+		<span id="error_divDescription"></span>
+            <div class="g-recaptcha" id="divRecaptcha"></div>
+		 <button type="submit" name="button" id="submit">Envoyer</button>
+	</form>
+	
+	<script>
+        function disableButton() {
+          document.getElementById('submit').disabled = true;
+        }
+    </script>
+    
+		 <script> function onClick(e) {
 			e.preventDefault();
 			grecaptcha.enterprise.ready(async () => {
-			const token = await grecaptcha.enterprise.execute('6LdDorImAAAAAIZe-1yCOisnnypIT1AqgVKaaYr-', {action: 'POST'});
+			const token = await grecaptcha.enterprise.execute('6LdAN70mAAAAAHJx0J616dL3hGnoL9LzuCfHkNGj
+', {action: 'POST'});
 			// IMPORTANT: The 'token' that results from execute is an encrypted response sent by
 			// reCAPTCHA Enterprise to the end user's browser.
 			// This token must be validated by creating an assessment.
@@ -158,104 +228,6 @@ try {
 		}
 		function onSubmit(token) {
 			document.getElementById("demo-form").submit();
-		} </script> -->
-	<style>
-		.receive-message{
-			color: #00FF00;
-		}
-		.error-message{
-			color: #FF0000;
-		}
-		form {
-			display: flex;
-			flex-direction: column;
-		}
-		#submit {
-			width: 10%;	
-		}
-	</style>
-</head>
-<body>
-<!-- <body style="background-color:#1c87c9;"> -->
-	<h2>Hackers Poulette ™ </h2>
-	<h1>Contact Support</h1>
-	<form action="verify.php" method="post" enctype="multipart/form-data">
-		<div>
-			<label for="name">Name</label>
-			<input type="text" name="name" value="" maxlength="255">
-			<?php 
-			inputValue($inputName); 
-			?>
-		</div>
-		<div>
-			<label for="firstname">Firstname</label>
-			<input type="text" name="firstname" value="" maxlength="255">
-			<?php 
-			inputValue($inputFirstname); 
-			?>
-		</div>
-		<div>
-			<label for="email">Email</label>
-			<input type="email" name="email" value="" maxlength="255">
-			<?php 
-			sanitizeEmail($inputEmail); 
-			?>
-		</div>
-		<div>
-			<label for="file">File</label>
-			<!-- <input type="hidden" name="MAX_FILE_SIZE" value="2000000"> -->
-            <input type="file" name="file" id="">
-			<?php 
-			inputFile ($inputFile) ;
-			?>
-		</div>
-		<div>
-			<label for="description">Description</label>
-			<textarea type="text" name="description" value="" maxlength="1000"></textarea>
-			<?php 
-				sanitizeTextarea($inputDescription); 
-			?>
-		</div>
-		<!-- <input type="hidden" id="recaptchaResponse" name="recaptcha-response"> -->
-
-		<button type="submit" name="button" id="submit">Envoyer</button>
-		
-		<!-- <script src="https://www.google.com/recaptcha/api.js?render=6LdDorImAAAAAIZe-1yCOisnnypIT1AqgVKaaYr-"></script> -->
-
-
-		<!-- <button type="submit" name="button" id="submit" class="g-recaptcha" 
-        data-sitekey="reCAPTCHA_site_key" 
-        data-callback='onSubmit' 
-        data-action='submit'>Envoyer</button>
-	</form> -->
-	<!-- <script>
-			grecaptcha.enterprise.ready(async () => {
-				const token = await grecaptcha.enterprise.execute('6LdDorImAAAAAIZe-1yCOisnnypIT1AqgVKaaYr-', {action: 'homepage'});
-				// IMPORTANT: The 'token' that results from execute is an encrypted response sent by
-				// reCAPTCHA Enterprise to the end user's browser.
-				// This token must be validated by creating an assessment.
-				// See https://cloud.google.com/recaptcha-enterprise/docs/create-assessment
-			});
-		</script> -->
-		<!-- <script>
-		grecaptcha.ready(function() {
-			grecaptcha.execute('6LdDorImAAAAAIZe-1yCOisnnypIT1AqgVKaaYr-', {action: 'homepage'}).then(function(token) {
-				document.getElementById('recaptchaResponse').value = token
-			});
-		});
-		</script>	 -->
-		<!-- <script defer src="https://www.google.com/recaptcha/enterprise.js?render=6Lcct7wmAAAAAMRMm5aOa3CT18U_9VMPGeCeqKPW"></script> -->
-		<!-- <script>
-			function onSubmit(token) {
-				document.getElementById("demo-form").submit();
-			}
- 		</script>
-		<script src="https://www.google.com/recaptcha/api.js"></script> -->
+		} </script>
 </body>
 </html>
-
-<?php
-
-
-
-?>
